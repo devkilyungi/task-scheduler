@@ -26,7 +26,7 @@ func TestTask_Execute(t *testing.T) {
 	taskA := &Task{
 		Name:   "Task A",
 		Delay:  3,
-		status: pending,
+		status: Pending,
 	}
 
 	t.Run("prints and sleeps in the right order", func(t *testing.T) {
@@ -58,7 +58,7 @@ func TestTask_Execute(t *testing.T) {
 		if err != nil {
 			t.Fatalf("task execution failed: %v", err)
 		}
-		
+
 		got := buffer.String()
 		want := `3...2...1...
 Task A executed!`

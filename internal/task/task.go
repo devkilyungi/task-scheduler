@@ -11,12 +11,12 @@ import (
 type Status int
 
 const (
-	pending Status = iota
-	completed
+	Pending Status = iota
+	Completed
 )
 
-func (s Status) String() string {
-	return [...]string{"Pending", "Completed"}[s]
+func (s *Status) String() string {
+	return [...]string{"Pending", "Completed"}[*s]
 }
 
 type Task struct {
@@ -37,7 +37,9 @@ func (t *Task) Execute(w io.Writer, s dependencies.Sleeper) error {
 		}
 		s.Sleep()
 	}
-	_, err := fmt.Fprintf(w, "\n%s executed!", t.Name)
+
+	t.status = Completed
+	_, err := fmt.Fprintf(w, "\n%s executed!\n", t.Name)
 	if err != nil {
 		return errors.ErrTaskFailedToExecute
 	}
