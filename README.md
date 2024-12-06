@@ -24,5 +24,5 @@ A simple command-line Task Scheduler application written in Go. This project dem
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/devkilyungi/time-scheduler.git
-   cd time-scheduler
+   git clone https://github.com/devkilyungi/task-scheduler.git
+   cd task-scheduler
