@@ -12,24 +12,21 @@ func GetUserChoice() (int, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\nEnter your choice: ")
 	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	return strconv.Atoi(input)
+	return strconv.Atoi(strings.TrimSpace(input))
 }
 
 func GetTaskName() string {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("\nEnter your task name: ")
+	fmt.Print("\nEnter task name: ")
 	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	return ToTitle(input)
+	return ToTitle(strings.TrimSpace(input))
 }
 
 func GetDelayTime() (int, error) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter your delay time (in seconds): ")
+	fmt.Print("Enter delay time (in seconds): ")
 	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	return strconv.Atoi(input)
+	return strconv.Atoi(strings.TrimSpace(input))
 }
 
 func ToTitle(input string) string {

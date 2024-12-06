@@ -5,7 +5,6 @@ import (
 	"github.com/devkilyungi/time-scheduler/internal/dependencies"
 	"github.com/devkilyungi/time-scheduler/internal/errors"
 	"io"
-	"time"
 )
 
 type Status int
@@ -15,18 +14,26 @@ const (
 	Completed
 )
 
-func (s *Status) String() string {
-	return [...]string{"Pending", "Completed"}[*s]
+func (s Status) String() string {
+	return [...]string{"Pending", "Completed"}[s]
 }
 
 type Task struct {
 	Name   string
-	Delay  time.Duration
+	Delay  int
 	status Status
+}
+
+func (t *Task) IsPending() bool {
+	return t.status == Pending
 }
 
 func (t *Task) Status() string {
 	return t.status.String()
+}
+
+func (t *Task) Reschedule() {
+	t.status = Pending
 }
 
 func (t *Task) Execute(w io.Writer, s dependencies.Sleeper) error {
@@ -40,9 +47,5 @@ func (t *Task) Execute(w io.Writer, s dependencies.Sleeper) error {
 
 	t.status = Completed
 	_, err := fmt.Fprintf(w, "\n%s executed!\n", t.Name)
-	if err != nil {
-		return errors.ErrTaskFailedToExecute
-	}
-
-	return nil
+	return err
 }
