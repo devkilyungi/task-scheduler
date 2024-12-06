@@ -26,7 +26,7 @@ func GetTaskName() string {
 
 func GetDelayTime() (int, error) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("\nEnter your delay time (in seconds): ")
+	fmt.Print("Enter your delay time (in seconds): ")
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSpace(input)
 	return strconv.Atoi(input)
