@@ -1,0 +1,31 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build output directories
+bin/
+out/
+
+# Go build artifacts
+*.log
+*.test
+*.prof
+*.out
+
+# Dependency directories (often used for vendoring)
+vendor/
+
+# Go Modules
+go.sum
+
+# IDE and Editor-specific files
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
