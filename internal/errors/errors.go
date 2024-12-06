@@ -1,11 +1,8 @@
 package errors
 
-type SchedulerError string
+import "errors"
 
-func (e SchedulerError) Error() string {
-	return string(e)
-}
-
-const (
-	ErrTaskFailedToExecute = SchedulerError("task execution failed")
+var (
+	ErrTaskFailedToExecute = errors.New("task execution failed")
+	ErrTaskNotFound        = errors.New("task not found")
 )
