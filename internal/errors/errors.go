@@ -1,8 +1,15 @@
 package errors
 
-import "errors"
+type SchedulerError struct {
+	Code    string
+	Message string
+}
+
+func (e *SchedulerError) Error() string {
+	return e.Message
+}
 
 var (
-	ErrTaskFailedToExecute = errors.New("task execution failed")
-	ErrTaskNotFound        = errors.New("task not found")
+	ErrTaskNotFound        = &SchedulerError{Code: "TASK_NOT_FOUND", Message: "task not found"}
+	ErrTaskFailedToExecute = &SchedulerError{Code: "TASK_EXECUTION_FAILED", Message: "task execution failed"}
 )
