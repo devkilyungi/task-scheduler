@@ -15,12 +15,12 @@ func (s *SpySleeper) Sleep(duration time.Duration) {
 
 func TestConfigurableSleeper(t *testing.T) {
 	sleepTime := 3 * time.Second
-
 	spySleeper := &SpySleeper{}
 	sleeper := ConfigurableSleeper{sleepTime, spySleeper.Sleep}
+
 	sleeper.Sleep()
 
 	if spySleeper.durationSlept != sleepTime {
-		t.Fatalf("should have slept for %v, but slept for %v", sleepTime, spySleeper.durationSlept)
+		t.Fatalf("expected to sleep for %v, but slept for %v", sleepTime, spySleeper.durationSlept)
 	}
 }

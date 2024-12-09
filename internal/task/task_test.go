@@ -22,53 +22,71 @@ func (s *SpyExecution) Sleep() {
 	s.Calls = append(s.Calls, sleep)
 }
 
-func TestTask_Execute(t *testing.T) {
+func TestTaskExecution(t *testing.T) {
 	taskA := &Task{
 		Name:   "Task A",
-		Delay:  3,
+		Delay:  4,
 		status: Pending,
 	}
+	spyExecution := &SpyExecution{}
 
-	t.Run("prints and sleeps in the right order", func(t *testing.T) {
-		spySleeper := &SpyExecution{}
-		err := taskA.Execute(spySleeper, spySleeper)
+	t.Run("task is created with correct details", func(t *testing.T) {
+		wantName := "Task A"
+		wantDelay := 4
+		wantStatus := Pending
+
+		if taskA.Name != wantName {
+			t.Errorf("taskA.Name is %s; want %s", taskA.Name, wantName)
+		}
+
+		if taskA.Delay != wantDelay {
+			t.Errorf("taskA.Delay is %d; want %d", taskA.Delay, wantDelay)
+		}
+
+		if taskA.status != wantStatus {
+			t.Errorf("taskA.status is %s; want %s", taskA.status, wantStatus)
+		}
+	})
+
+	t.Run("task executes in the correct order", func(t *testing.T) {
+		err := taskA.Execute(spyExecution, spyExecution)
 		if err != nil {
 			t.Fatalf("task execution failed: %v", err)
 		}
 
-		want := []string{
-			write,
-			sleep,
-			write,
-			sleep,
-			write,
-			sleep,
-			write,
-		}
-
-		if !reflect.DeepEqual(want, spySleeper.Calls) {
-			t.Errorf("got %v, want %v", spySleeper.Calls, want)
+		want := []string{write, sleep, write, sleep, write, sleep, write, sleep, write}
+		if !reflect.DeepEqual(want, spyExecution.Calls) {
+			t.Fatalf("got %v, want %v", spyExecution.Calls, want)
 		}
 	})
 
-	t.Run("prints delay countdown", func(t *testing.T) {
+	t.Run("task changes status to Completed on completion", func(t *testing.T) {
+		err := taskA.Execute(spyExecution, spyExecution)
+		if err != nil {
+			t.Fatalf("task execution failed: %v", err)
+		}
+
+		want := Completed
+		if taskA.status != want {
+			t.Fatalf("got %v, want %v", taskA.status, want)
+		}
+	})
+
+	t.Run("task countdown prints correct output", func(t *testing.T) {
 		buffer := &bytes.Buffer{}
-		sleeper := &SpyExecution{}
-		err := taskA.Execute(buffer, sleeper)
+		spySleeper := &SpyExecution{}
+		err := taskA.Execute(buffer, spySleeper)
 		if err != nil {
 			t.Fatalf("task execution failed: %v", err)
 		}
 
 		got := buffer.String()
-		want := `3...2...1...
-Task A executed!`
+		want := `4...3...2...1...
+Task A executed!
+`
 
 		if got != want {
-			t.Errorf("got %q, want %q", got, want)
-		}
-
-		if int(taskA.Delay) != len(sleeper.Calls) {
-			t.Errorf("got %d calls, want %d", len(sleeper.Calls), taskA.Delay)
+			t.Fatalf("got %v, want %v", got, want)
 		}
 	})
 }
