@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/devkilyungi/time-scheduler/internal/dependencies"
 	"github.com/devkilyungi/time-scheduler/internal/handlers"
 	"github.com/devkilyungi/time-scheduler/internal/scheduler"
 	"github.com/devkilyungi/time-scheduler/internal/task"
+	"os"
+	"time"
 )
 
 func main() {
-	sch := scheduler.NewScheduler()
+	writer := os.Stdout
+	sleeper := dependencies.NewConfigurableSleeper(1*time.Second, time.Sleep)
+	sch := scheduler.NewScheduler(writer, sleeper)
 
 	fmt.Println("\nWelcome to the Task Scheduler!")
 	fmt.Println("1. Add a task")

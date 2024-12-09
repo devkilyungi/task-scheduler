@@ -5,16 +5,21 @@ import (
 	"github.com/devkilyungi/time-scheduler/internal/dependencies"
 	"github.com/devkilyungi/time-scheduler/internal/errors"
 	"github.com/devkilyungi/time-scheduler/internal/task"
-	"os"
-	"time"
+	"io"
 )
 
 type Scheduler struct {
-	tasks []task.Task
+	tasks   []task.Task
+	writer  io.Writer
+	sleeper dependencies.Sleeper
 }
 
-func NewScheduler() *Scheduler {
-	return &Scheduler{tasks: []task.Task{}}
+func NewScheduler(writer io.Writer, sleeper dependencies.Sleeper) *Scheduler {
+	return &Scheduler{
+		tasks:   []task.Task{},
+		writer:  writer,
+		sleeper: sleeper,
+	}
 }
 
 func (s *Scheduler) Add(t task.Task) {
@@ -23,47 +28,47 @@ func (s *Scheduler) Add(t task.Task) {
 
 func (s *Scheduler) ViewTasks() {
 	if len(s.tasks) == 0 {
-		fmt.Println("No tasks found.")
+		_, _ = fmt.Fprintln(s.writer, "No tasks found.")
 		return
 	}
 	for _, t := range s.tasks {
-		fmt.Printf("- %s: %s\n", t.Name, t.Status())
+		_, _ = fmt.Fprintf(s.writer, "- %s: %s\n", t.Name, t.Status())
 	}
 }
 
 func (s *Scheduler) RunAll() {
 	if len(s.tasks) == 0 {
-		fmt.Println("No tasks found.")
+		_, _ = fmt.Fprintln(s.writer, "No tasks found.")
 		return
 	}
 
 	for i := range s.tasks {
 		if s.tasks[i].IsPending() {
-			_ = s.tasks[i].Execute(os.Stdout, dependencies.NewConfigurableSleeper(1*time.Second, time.Sleep))
+			_ = s.tasks[i].Execute(s.writer, s.sleeper)
 		} else {
-			fmt.Printf("- %s is already %s!\n", s.tasks[i].Name, s.tasks[i].Status())
+			_, _ = fmt.Fprintf(s.writer, "- %s is already %s!\n", s.tasks[i].Name, s.tasks[i].Status())
 		}
 	}
 }
 
 func (s *Scheduler) RunPending() {
 	if len(s.tasks) == 0 {
-		fmt.Println("No tasks found.")
+		_, _ = fmt.Fprintln(s.writer, "No tasks found.")
 		return
 	}
 
 	for i := range s.tasks {
 		if s.tasks[i].IsPending() {
-			_ = s.tasks[i].Execute(os.Stdout, dependencies.NewConfigurableSleeper(1*time.Second, time.Sleep))
+			_ = s.tasks[i].Execute(s.writer, s.sleeper)
 		} else {
-			fmt.Printf("- %s is already %s!\n", s.tasks[i].Name, s.tasks[i].Status())
+			_, _ = fmt.Fprintf(s.writer, "- %s is already %s!\n", s.tasks[i].Name, s.tasks[i].Status())
 		}
 	}
 }
 
 func (s *Scheduler) Delete(name string) error {
 	if len(s.tasks) == 0 {
-		fmt.Println("No tasks found.")
+		_, _ = fmt.Fprintln(s.writer, "No tasks found.")
 		return errors.ErrTaskNotFound
 	}
 
@@ -78,13 +83,13 @@ func (s *Scheduler) Delete(name string) error {
 
 func (s *Scheduler) Reschedule(name string, delay int) error {
 	if len(s.tasks) == 0 {
-		fmt.Println("No tasks found.")
+		_, _ = fmt.Fprintln(s.writer, "No tasks found.")
 		return errors.ErrTaskNotFound
 	}
 
 	for i := range s.tasks {
 		if s.tasks[i].Name == name {
-			s.tasks[i].Delay = int(delay)
+			s.tasks[i].Delay = delay
 			s.tasks[i].Reschedule()
 			return nil
 		}
