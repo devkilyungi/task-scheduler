@@ -32,6 +32,11 @@ func (s *Scheduler) ViewTasks() {
 }
 
 func (s *Scheduler) RunAll() {
+	if len(s.tasks) == 0 {
+		fmt.Println("No tasks found.")
+		return
+	}
+
 	for i := range s.tasks {
 		if s.tasks[i].IsPending() {
 			_ = s.tasks[i].Execute(os.Stdout, dependencies.NewConfigurableSleeper(1*time.Second, time.Sleep))
@@ -42,6 +47,11 @@ func (s *Scheduler) RunAll() {
 }
 
 func (s *Scheduler) RunPending() {
+	if len(s.tasks) == 0 {
+		fmt.Println("No tasks found.")
+		return
+	}
+
 	for i := range s.tasks {
 		if s.tasks[i].IsPending() {
 			_ = s.tasks[i].Execute(os.Stdout, dependencies.NewConfigurableSleeper(1*time.Second, time.Sleep))
@@ -52,6 +62,11 @@ func (s *Scheduler) RunPending() {
 }
 
 func (s *Scheduler) Delete(name string) error {
+	if len(s.tasks) == 0 {
+		fmt.Println("No tasks found.")
+		return errors.ErrTaskNotFound
+	}
+
 	for i, t := range s.tasks {
 		if t.Name == name {
 			s.tasks = append(s.tasks[:i], s.tasks[i+1:]...)
@@ -62,6 +77,11 @@ func (s *Scheduler) Delete(name string) error {
 }
 
 func (s *Scheduler) Reschedule(name string, delay int) error {
+	if len(s.tasks) == 0 {
+		fmt.Println("No tasks found.")
+		return errors.ErrTaskNotFound
+	}
+
 	for i := range s.tasks {
 		if s.tasks[i].Name == name {
 			s.tasks[i].Delay = int(delay)
